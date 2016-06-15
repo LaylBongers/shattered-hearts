@@ -1,0 +1,7 @@
+[package]
+name = "clausewitz-data"
+version = "0.1.0"
+authors = ["Layl <LaylConway@users.noreply.github.com>"]
+
+[dependencies]
+combine = "2.0.0-beta"

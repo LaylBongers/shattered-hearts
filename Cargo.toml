@@ -1,0 +1,18 @@
+[package]
+name = "shattered-hearts"
+version = "0.1.0"
+authors = ["Layl <LaylConway@users.noreply.github.com>"]
+
+[dependencies]
+log = "0.3.6"
+log4rs = { version = "0.4.7", features = ["toml"] }
+toml = "0.1.30"
+
+[dependencies.clausewitz-data]
+path = "./clausewitz-data"
+
+[dependencies.clausewitz-game-hoi4]
+path = "./clausewitz-game-hoi4"
+
+[dependencies.clausewitz-mod]
+path = "./clausewitz-mod"
