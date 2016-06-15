@@ -13,6 +13,3 @@ path = "./clausewitz-data"
 
 [dependencies.clausewitz-game-hoi4]
 path = "./clausewitz-game-hoi4"
-
-[dependencies.clausewitz-mod]
-path = "./clausewitz-mod"

@@ -1,20 +1,17 @@
-#[macro_use] extern crate log;
-extern crate clausewitz_data;
-
 use std::path::PathBuf;
 use std::fs;
 use clausewitz_data::{file, CwTable, CwValue};
 
-pub struct CwMod {
+pub struct Hoi4Mod {
     name: String,
     friendly_name: String,
     game_version: String,
     tags: Vec<String>,
 }
 
-impl CwMod {
+impl Hoi4Mod {
     pub fn new(name: &str, friendly_name: &str, game_version: &str) -> Self {
-        CwMod {
+        Hoi4Mod {
             name: name.into(),
             friendly_name: friendly_name.into(),
             game_version: game_version.into(),

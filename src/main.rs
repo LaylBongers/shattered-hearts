@@ -3,12 +3,10 @@ extern crate log4rs;
 extern crate toml;
 extern crate clausewitz_data;
 extern crate clausewitz_game_hoi4;
-extern crate clausewitz_mod;
 
 mod config;
 
-use clausewitz_game_hoi4::CwGameHoi4;
-use clausewitz_mod::CwMod;
+use clausewitz_game_hoi4::{CwGameHoi4, Hoi4Mod};
 use config::Config;
 
 fn main() {
@@ -20,7 +18,7 @@ fn main() {
     let game = CwGameHoi4::at(&config.game_path);
 
     // Set up the mod file
-    let mut modif = CwMod::new(&config.mod_name, &config.mod_name_friendly, "1.0.1");
+    let mut modif = Hoi4Mod::new(&config.mod_name, &config.mod_name_friendly, "1.0.1");
     modif.add_tag("Alternative History");
 
     // Go over all provinces

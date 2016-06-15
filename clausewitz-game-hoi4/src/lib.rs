@@ -1,6 +1,10 @@
 #[macro_use] extern crate log;
 extern crate clausewitz_data;
 
+mod modif;
+
+pub use modif::Hoi4Mod;
+
 use std::path::PathBuf;
 use clausewitz_data::{file, CwTable};
 
