@@ -26,6 +26,9 @@ fn main() {
     // Go over all provinces
     for state in game.states().iter() {
         info!("Generating country for state \"{}\"...", state.name());
+
+        // Get a copy of the old country
+        let country = game.country_for_tag(state.country_tag()).clone();
     }
 
     // Export the mod
