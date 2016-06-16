@@ -14,11 +14,15 @@ pub fn read_all_text<P: AsRef<Path>>(path: P) -> Result<String, Error> {
     Ok(data)
 }
 
-pub fn write_all_text<P: AsRef<Path>>(path: P, text: &str) -> Result<(), Error> {
+pub fn write_all_text<P: AsRef<Path>>(path: P, text: &str, add_bom: bool) -> Result<(), Error> {
     let mut file = try!(File::create(path));
+
+    // Add BOM if needed
+    if add_bom {
+        try!(file.write_all("\u{feff}".as_bytes()));
+    }
+
     try!(file.write_all(text.as_bytes()));
+
     Ok(())
 }
-
-// `read_all_win_1252` and `write_all_win_1252` are no longer needed because the data files are now
-// in UTF-8.

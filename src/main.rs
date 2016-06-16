@@ -77,7 +77,7 @@ fn main() {
         country.set_tag(tags.next(&game));
         country.set_name(state.name().clone());
         country.set_color(rng.gen(), rng.gen(), rng.gen());
-        // TODO: Country files have tags inside, check if they cause issues
+        country.set_capital(state.id().clone());
 
         // Copy the state so we can assign ownership
         let mut modif_state = state.clone();

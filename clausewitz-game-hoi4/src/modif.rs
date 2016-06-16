@@ -81,7 +81,7 @@ impl Hoi4Mod {
 
         // Write the data
         let dotmod_str = dotmod.serialize();
-        file::write_all_text(modfile, &dotmod_str).unwrap();
+        file::write_all_text(modfile, &dotmod_str, false).unwrap();
     }
 
     fn export_countries(&self, path: &PathBuf) {
@@ -92,7 +92,7 @@ impl Hoi4Mod {
         country_tags.push("common/country_tags");
         fs::create_dir_all(&country_tags).unwrap();
         country_tags.push("countries.txt");
-        file::write_all_text(country_tags, &self.generate_country_tags_table().serialize()).unwrap();
+        file::write_all_text(country_tags, &self.generate_country_tags_table().serialize(), false).unwrap();
 
         // Get the common and history roots
         let mut common_file_root = path.clone();
@@ -107,11 +107,11 @@ impl Hoi4Mod {
         for country in &self.countries {
             let mut common_file = common_file_root.clone();
             common_file.push(format!("{}.txt", country.name()));
-            file::write_all_text(common_file, &country.common_table().serialize()).unwrap();
+            file::write_all_text(common_file, &country.common_table().serialize(), false).unwrap();
 
             let mut history_file = history_file_root.clone();
             history_file.push(format!("{} - {}.txt", country.tag(), country.name()));
-            file::write_all_text(history_file, &country.history_table().serialize()).unwrap();
+            file::write_all_text(history_file, &country.history_table().serialize(), true).unwrap();
         }
     }
 
@@ -133,7 +133,7 @@ impl Hoi4Mod {
         for state in &self.states {
             let mut state_file = state_file_root.clone();
             state_file.push(state.file_name());
-            file::write_all_text(state_file, &state.data().serialize()).unwrap();
+            file::write_all_text(state_file, &state.data().serialize(), false).unwrap();
         }
     }
 }

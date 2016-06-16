@@ -53,6 +53,10 @@ impl Hoi4Country {
     pub fn set_color(&mut self, r: u8, g: u8, b: u8) {
         self.common.set("color", CwValue::from_color(r, g, b));
     }
+
+    pub fn set_capital(&mut self, state: String) {
+        self.history.set("capital", state.into());
+    }
 }
 
 #[derive(Clone)]
@@ -108,6 +112,10 @@ impl Hoi4State {
 
     pub fn add_core(&mut self, tag: String) {
         self.history_table_mut().add("add_core_of", tag.into());
+    }
+
+    pub fn id(&self) -> &String {
+        self.state_table().get("id").unwrap().as_string().unwrap()
     }
 }
 
