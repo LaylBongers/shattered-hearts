@@ -178,74 +178,61 @@ mod tests {
     fn parse_value() {
         let data = CwTable::parse("foo=bar");
         assert_eq!(data.values.len(), 1);
-        assert_eq!(data.values[0].key, "foo");
-        assert_eq!(data.values[0].value.as_string(), Some("bar"));
+        assert_keystr(&data.values[0], "foo", "bar");
     }
 
     #[test]
     fn parse_values() {
         let data = CwTable::parse("foo=bar\nbar=foo");
         assert_eq!(data.values.len(), 2);
-        assert_eq!(data.values[0].key, "foo");
-        assert_eq!(data.values[0].value.as_string(), Some("bar"));
-        assert_eq!(data.values[1].key, "bar");
-        assert_eq!(data.values[1].value.as_string(), Some("foo"));
+        assert_keystr(&data.values[0], "foo", "bar");
+        assert_keystr(&data.values[1], "bar", "foo");
     }
 
     #[test]
     fn parse_values_inline() {
         let data = CwTable::parse("foo=bar bar=foo");
         assert_eq!(data.values.len(), 2);
-        assert_eq!(data.values[0].key, "foo");
-        assert_eq!(data.values[0].value.as_string(), Some("bar"));
-        assert_eq!(data.values[1].key, "bar");
-        assert_eq!(data.values[1].value.as_string(), Some("foo"));
+        assert_keystr(&data.values[0], "foo", "bar");
+        assert_keystr(&data.values[1], "bar", "foo");
     }
 
     #[test]
     fn parse_whitespace() {
         let data = CwTable::parse(" foo  = bar  ");
         assert_eq!(data.values.len(), 1);
-        assert_eq!(data.values[0].key, "foo");
-        assert_eq!(data.values[0].value.as_string(), Some("bar"));
+        assert_keystr(&data.values[0], "foo", "bar");
     }
 
     #[test]
     fn parse_comments() {
         let data = CwTable::parse("foo=bar #things\nbar=foo");
         assert_eq!(data.values.len(), 2);
-        assert_eq!(data.values[0].key, "foo");
-        assert_eq!(data.values[0].value.as_string(), Some("bar"));
-        assert_eq!(data.values[1].key, "bar");
-        assert_eq!(data.values[1].value.as_string(), Some("foo"));
+        assert_keystr(&data.values[0], "foo", "bar");
+        assert_keystr(&data.values[1], "bar", "foo");
     }
 
     #[test]
     fn parse_quoted() {
         let data = CwTable::parse("foo=\"I'm a little teapot\"");
         assert_eq!(data.values.len(), 1);
-        assert_eq!(data.values[0].key, "foo");
-        assert_eq!(data.values[0].value.as_string(), Some("I'm a little teapot"));
+        assert_keystr(&data.values[0], "foo", "I'm a little teapot");
 
         let data = CwTable::parse(r#"foo="I'm a little teapot \"short and stout\"""#);
         assert_eq!(data.values.len(), 1);
-        assert_eq!(data.values[0].key, "foo");
-        assert_eq!(data.values[0].value.as_string(), Some("I'm a little teapot \"short and stout\""));
+        assert_keystr(&data.values[0], "foo", "I'm a little teapot \"short and stout\"");
     }
 
     #[test]
     fn parse_nested() {
         let data = CwTable::parse("foo={bar=chickens foobar=frogs}\ncheeze=unfrogged");
         assert_eq!(data.values.len(), 2);
-        assert_eq!(data.values[1].key, "cheeze");
-        assert_eq!(data.values[1].value.as_string(), Some("unfrogged"));
+        assert_keystr(&data.values[1], "cheeze", "unfrogged");
 
         if let &CwValue::Table(ref table) = &data.values[0].value {
             assert_eq!(table.values.len(), 2);
-            assert_eq!(table.values[0].key, "bar");
-            assert_eq!(table.values[0].value.as_string(), Some("chickens"));
-            assert_eq!(table.values[1].key, "foobar");
-            assert_eq!(table.values[1].value.as_string(), Some("frogs"));
+            assert_keystr(&table.values[0], "bar", "chickens");
+            assert_keystr(&table.values[1], "foobar", "frogs");
         } else {
             assert!(false, "Wrong value type!");
         }
@@ -255,12 +242,12 @@ mod tests {
     fn parse_annoying_nested() {
         let data = CwTable::parse("foo={bar=chickens foobar=frogs}cheeze=unfrogged");
         assert_eq!(data.values.len(), 2);
-        assert_keystr(data.values[1], "cheeze", "unfrogged");
+        assert_keystr(&data.values[1], "cheeze", "unfrogged");
 
         if let &CwValue::Table(ref table) = &data.values[0].value {
             assert_eq!(table.values.len(), 2);
-            assert_keystr(table.values[0], "bar", "chickens");
-            assert_keystr(table.values[1], "foobar", "frogs");
+            assert_keystr(&table.values[0], "bar", "chickens");
+            assert_keystr(&table.values[1], "foobar", "frogs");
         } else {
             assert!(false, "Wrong value type!");
         }
@@ -274,18 +261,18 @@ mod tests {
 
         if let &CwValue::Array(ref array) = &data.values[0].value {
             assert_eq!(array.len(), 3);
-            assert_valuestr(array[0], "why");
-            assert_valuestr(array[1], "does this");
-            assert_valuestr(array[2], "exist");
+            assert_valuestr(&array[0], "why");
+            assert_valuestr(&array[1], "does this");
+            assert_valuestr(&array[2], "exist");
         }
     }
 
     fn assert_keystr(cw_value: &CwKeyValue, key: &str, value: &str) {
         assert_eq!(cw_value.key, key);
-        assert_valuestr(cw_value.value, value);
+        assert_valuestr(&cw_value.value, value);
     }
 
     fn assert_valuestr(cw_value: &CwValue, value: &str) {
-        assert_eq!(cw_value.value.as_string(), Some(&String::from(value)));
+        assert_eq!(cw_value.as_string(), Some(&String::from(value)));
     }
 }
