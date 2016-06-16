@@ -38,6 +38,14 @@ impl CwValue {
             None
         }
     }
+
+    pub fn as_table_mut(&mut self) -> Option<&mut CwTable> {
+        if let &mut CwValue::Table(ref mut val) = self {
+            Some(val)
+        } else {
+            None
+        }
+    }
 }
 
 impl From<String> for CwValue {
@@ -95,6 +103,10 @@ impl CwTable {
         self.values.iter().find(|v| v.key == key).map(|v| &v.value)
     }
 
+    pub fn get_mut(&mut self, key: &str) -> Option<&mut CwValue> {
+        self.values.iter_mut().find(|v| v.key == key).map(|v| &mut v.value)
+    }
+
     pub fn set(&mut self, key: &str, value: CwValue) {
         // Check if a value already exists with this key
         if let Some(ref mut entry) = self.values.iter_mut().find(|v| v.key == key) {
@@ -104,6 +116,10 @@ impl CwTable {
         }
 
         // It doesn't, add it
+        self.values.push(CwKeyValue { key: key.into(), value: value });
+    }
+
+    pub fn add(&mut self, key: &str, value: CwValue) {
         self.values.push(CwKeyValue { key: key.into(), value: value });
     }
 }

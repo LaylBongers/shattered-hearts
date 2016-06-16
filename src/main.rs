@@ -64,17 +64,25 @@ fn main() {
     let mut modif = Hoi4Mod::new(&config.mod_name, &config.mod_name_friendly, "1.0.1");
     modif.add_tag("Alternative History");
 
-    // Go over all provinces
+    // Go over all states
     let mut tags = TagGenerator::new();
     for state in game.states().iter() {
         info!("Generating country for state \"{}\"...", state.name());
 
-        // Get a copy of the old country
-        let mut country = game.country_for_tag(state.country_tag()).unwrap().clone();
-
-        // Get a tag for this country
+        // Copy the country with a new name and tag for this state
+        let mut country = game.country_for_tag(state.owner()).unwrap().clone();
         country.set_tag(tags.next(&game));
+        country.set_name(state.name().clone());
+        // TODO: Country files have tags inside, check if they cause issues
 
+        // Copy the state so we can assign ownership
+        let mut modif_state = state.clone();
+        modif_state.set_owner(country.tag().clone());
+        modif_state.add_core(country.tag().clone());
+
+        // Add the country and modified state to the mod
+        //modif.add_country(country);
+        //modif.add_state(modif_state);
     }
 
     // Export the mod

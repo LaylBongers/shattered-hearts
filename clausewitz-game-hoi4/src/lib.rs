@@ -33,6 +33,14 @@ impl Hoi4Country {
     pub fn set_tag(&mut self, value: String) {
         self.tag = value
     }
+
+    pub fn name(&self) -> &String {
+        &self.name
+    }
+
+    pub fn set_name(&mut self, value: String) {
+        self.name = value
+    }
 }
 
 #[derive(Clone)]
@@ -51,16 +59,33 @@ impl Hoi4State {
         self.data.get("state").unwrap().as_table().unwrap()
     }
 
+    fn state_table_mut(&mut self) -> &mut CwTable {
+        self.data.get_mut("state").unwrap().as_table_mut().unwrap()
+    }
+
+
     fn history_table(&self) -> &CwTable {
         self.state_table().get("history").unwrap().as_table().unwrap()
+    }
+
+    fn history_table_mut(&mut self) -> &mut CwTable {
+        self.state_table_mut().get_mut("history").unwrap().as_table_mut().unwrap()
     }
 
     pub fn name(&self) -> &String {
         self.state_table().get("name").unwrap().as_string().unwrap()
     }
 
-    pub fn country_tag(&self) -> &String {
+    pub fn owner(&self) -> &String {
         self.history_table().get("owner").unwrap().as_string().unwrap()
+    }
+
+    pub fn set_owner(&mut self, tag: String) {
+        self.history_table_mut().set("owner", tag.into());
+    }
+
+    pub fn add_core(&mut self, tag: String) {
+        self.history_table_mut().add("add_core_of", tag.into());
     }
 }
 
