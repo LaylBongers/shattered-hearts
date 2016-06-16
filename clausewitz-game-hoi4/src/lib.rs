@@ -29,6 +29,10 @@ impl Hoi4Country {
     pub fn tag(&self) -> &String {
         &self.tag
     }
+
+    pub fn set_tag(&mut self, value: String) {
+        self.tag = value
+    }
 }
 
 #[derive(Clone)]
@@ -151,6 +155,10 @@ impl CwGameHoi4 {
 
     pub fn states(&self) -> &Vec<Hoi4State> {
         &self.states
+    }
+
+    pub fn countries(&self) -> &Vec<Hoi4Country> {
+        &self.countries
     }
 
     pub fn country_for_tag(&self, tag: &str) -> Option<&Hoi4Country> {
