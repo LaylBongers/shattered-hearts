@@ -60,6 +60,12 @@ impl<'a> From<&'a String> for CwValue {
     }
 }
 
+impl From<i32> for CwValue {
+    fn from(value: i32) -> Self {
+        CwValue::from_str(value.to_string())
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct CwKeyValue {
     pub key: String,

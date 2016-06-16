@@ -69,6 +69,7 @@ fn main() {
     // Go over all states
     let mut tags = TagGenerator::new();
     let mut rng = StdRng::new().unwrap();
+    let mut next_id = 1000;
     for state in game.states().iter() {
         info!("Generating country for state \"{}\"...", state.name());
 
@@ -79,9 +80,13 @@ fn main() {
         country.set_color(rng.gen(), rng.gen(), rng.gen());
         country.set_capital(state.id().clone());
 
+        // Replace IDs in the country so they don't conflict
+        country.replace_ids(|| {next_id+=1; next_id-1});
+
         // Copy the state so we can assign ownership
         let mut modif_state = state.clone();
         modif_state.set_owner(country.tag().clone());
+        modif_state.set_controller(country.tag().clone());
         modif_state.add_core(country.tag().clone());
 
         // Add the country and modified state to the mod

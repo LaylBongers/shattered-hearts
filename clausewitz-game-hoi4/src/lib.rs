@@ -26,6 +26,17 @@ impl Hoi4Country {
         }
     }
 
+    pub fn replace_ids<F: FnMut() -> i32>(&mut self, mut id_provider: F) {
+        for ref mut keyval in self.history.values.iter_mut() {
+            if  keyval.key == "create_corps_commander" ||
+                keyval.key == "create_field_marshal" ||
+                keyval.key == "create_navy_leader" {
+                let table = keyval.value.as_table_mut().unwrap();
+                table.set("id", id_provider().into());
+            }
+        }
+    }
+
     pub fn tag(&self) -> &String {
         &self.tag
     }
@@ -108,6 +119,10 @@ impl Hoi4State {
 
     pub fn set_owner(&mut self, tag: String) {
         self.history_table_mut().set("owner", tag.into());
+    }
+
+    pub fn set_controller(&mut self, tag: String) {
+        self.history_table_mut().set("controller", tag.into());
     }
 
     pub fn add_core(&mut self, tag: String) {
