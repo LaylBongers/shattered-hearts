@@ -41,18 +41,36 @@ impl Hoi4Country {
     pub fn set_name(&mut self, value: String) {
         self.name = value
     }
+
+    pub fn common_table(&self) -> &CwTable {
+        &self.common
+    }
+
+    pub fn history_table(&self) -> &CwTable {
+        &self.history
+    }
 }
 
 #[derive(Clone)]
 pub struct Hoi4State {
+    file_name: String,
     data: CwTable,
 }
 
 impl Hoi4State {
-    pub fn load(data: CwTable) -> Self {
+    pub fn load(file_name: String, data: CwTable) -> Self {
         Hoi4State {
-            data: data
+            file_name: file_name,
+            data: data,
         }
+    }
+
+    pub fn file_name(&self) -> &String {
+        &self.file_name
+    }
+
+    pub fn data(&self) -> &CwTable {
+        &self.data
     }
 
     fn state_table(&self) -> &CwTable {
@@ -146,7 +164,7 @@ impl CwGameHoi4 {
 
         // Load in the states
         let states = Self::load_directory(path, "history", "states").into_iter()
-            .map(|t| Hoi4State::load(t.1)).collect();
+            .map(|t| Hoi4State::load(t.0, t.1)).collect();
 
         // Create the container type holding all the data
         CwGameHoi4 {

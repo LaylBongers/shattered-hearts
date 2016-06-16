@@ -1,4 +1,5 @@
 # This is a template with default values for Linux
-mod_name = "Shattered Hearts"
+mod_name = "shattered"
+mod_name_friendly = "Shattered Hearts"
 target_path = "<REPLACE WITH USER ROOT, ~ will not work>/.local/share/Paradox Interactive/Hearts of Iron IV/mod"
 game_path = "<REPLACE WITH ACTUAL GAME INSTALL PATH>"

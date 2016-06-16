@@ -81,8 +81,8 @@ fn main() {
         modif_state.add_core(country.tag().clone());
 
         // Add the country and modified state to the mod
-        //modif.add_country(country);
-        //modif.add_state(modif_state);
+        modif.add_country(country);
+        modif.add_state(modif_state);
     }
 
     // Export the mod
