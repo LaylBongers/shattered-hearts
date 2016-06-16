@@ -7,6 +7,7 @@ authors = ["Layl <LaylConway@users.noreply.github.com>"]
 log = "0.3.6"
 log4rs = { version = "0.4.7", features = ["toml"] }
 toml = "0.1.30"
+rand = "0.3.14"
 
 [dependencies.clausewitz-data]
 path = "./clausewitz-data"

@@ -8,6 +8,9 @@ pub fn read_all_text<P: AsRef<Path>>(path: P) -> Result<String, Error> {
     let mut data = String::new();
     try!(file.read_to_string(&mut data));
 
+    // Trim BOM if needed
+    data = data.trim_left_matches('\u{feff}').into();
+
     Ok(data)
 }
 

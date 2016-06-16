@@ -1,11 +1,13 @@
 #[macro_use] extern crate log;
 extern crate log4rs;
 extern crate toml;
+extern crate rand;
 extern crate clausewitz_data;
 extern crate clausewitz_game_hoi4;
 
 mod config;
 
+use rand::{Rng, StdRng};
 use clausewitz_game_hoi4::{CwGameHoi4, Hoi4Mod};
 use config::Config;
 
@@ -66,6 +68,7 @@ fn main() {
 
     // Go over all states
     let mut tags = TagGenerator::new();
+    let mut rng = StdRng::new().unwrap();
     for state in game.states().iter() {
         info!("Generating country for state \"{}\"...", state.name());
 
@@ -73,6 +76,7 @@ fn main() {
         let mut country = game.country_for_tag(state.owner()).unwrap().clone();
         country.set_tag(tags.next(&game));
         country.set_name(state.name().clone());
+        country.set_color(rng.gen(), rng.gen(), rng.gen());
         // TODO: Country files have tags inside, check if they cause issues
 
         // Copy the state so we can assign ownership

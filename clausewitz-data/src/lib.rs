@@ -163,7 +163,7 @@ fn escape_str(text: &str) -> String {
 }
 
 fn escape_str_if_needed(text: &str) -> String {
-    if text.chars().any(|c| c == '\\' || c == ' ') {
+    if text.len() == 0 || text.chars().any(|c| c == '\\' || c == ' ') {
         escape_str(text)
     } else {
         text.into()
@@ -172,80 +172,80 @@ fn escape_str_if_needed(text: &str) -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::{Eu4Table, Eu4Value};
+    use super::{CwTable, CwValue, CwKeyValue};
 
     #[test]
     fn parse_value() {
-        let data = Eu4Table::parse("foo=bar");
+        let data = CwTable::parse("foo=bar");
         assert_eq!(data.values.len(), 1);
         assert_eq!(data.values[0].key, "foo");
-        assert_eq!(data.values[0].value.as_str(), "bar");
+        assert_eq!(data.values[0].value.as_string(), Some("bar"));
     }
 
     #[test]
     fn parse_values() {
-        let data = Eu4Table::parse("foo=bar\nbar=foo");
+        let data = CwTable::parse("foo=bar\nbar=foo");
         assert_eq!(data.values.len(), 2);
         assert_eq!(data.values[0].key, "foo");
-        assert_eq!(data.values[0].value.as_str(), "bar");
+        assert_eq!(data.values[0].value.as_string(), Some("bar"));
         assert_eq!(data.values[1].key, "bar");
-        assert_eq!(data.values[1].value.as_str(), "foo");
+        assert_eq!(data.values[1].value.as_string(), Some("foo"));
     }
 
     #[test]
     fn parse_values_inline() {
-        let data = Eu4Table::parse("foo=bar bar=foo");
+        let data = CwTable::parse("foo=bar bar=foo");
         assert_eq!(data.values.len(), 2);
         assert_eq!(data.values[0].key, "foo");
-        assert_eq!(data.values[0].value.as_str(), "bar");
+        assert_eq!(data.values[0].value.as_string(), Some("bar"));
         assert_eq!(data.values[1].key, "bar");
-        assert_eq!(data.values[1].value.as_str(), "foo");
+        assert_eq!(data.values[1].value.as_string(), Some("foo"));
     }
 
     #[test]
     fn parse_whitespace() {
-        let data = Eu4Table::parse(" foo  = bar  ");
+        let data = CwTable::parse(" foo  = bar  ");
         assert_eq!(data.values.len(), 1);
         assert_eq!(data.values[0].key, "foo");
-        assert_eq!(data.values[0].value.as_str(), "bar");
+        assert_eq!(data.values[0].value.as_string(), Some("bar"));
     }
 
     #[test]
     fn parse_comments() {
-        let data = Eu4Table::parse("foo=bar #things\nbar=foo");
+        let data = CwTable::parse("foo=bar #things\nbar=foo");
         assert_eq!(data.values.len(), 2);
         assert_eq!(data.values[0].key, "foo");
-        assert_eq!(data.values[0].value.as_str(), "bar");
+        assert_eq!(data.values[0].value.as_string(), Some("bar"));
         assert_eq!(data.values[1].key, "bar");
-        assert_eq!(data.values[1].value.as_str(), "foo");
+        assert_eq!(data.values[1].value.as_string(), Some("foo"));
     }
 
     #[test]
     fn parse_quoted() {
-        let data = Eu4Table::parse("foo=\"I'm a little teapot\"");
+        let data = CwTable::parse("foo=\"I'm a little teapot\"");
         assert_eq!(data.values.len(), 1);
         assert_eq!(data.values[0].key, "foo");
-        assert_eq!(data.values[0].value.as_str(), "I'm a little teapot");
+        assert_eq!(data.values[0].value.as_string(), Some("I'm a little teapot"));
 
-        let data = Eu4Table::parse(r#"foo="I'm a little teapot \"short and stout\"""#);
+        let data = CwTable::parse(r#"foo="I'm a little teapot \"short and stout\"""#);
         assert_eq!(data.values.len(), 1);
         assert_eq!(data.values[0].key, "foo");
-        assert_eq!(data.values[0].value.as_str(), "I'm a little teapot \"short and stout\"");
+        assert_eq!(data.values[0].value.as_string(), Some("I'm a little teapot \"short and stout\""));
     }
 
     #[test]
     fn parse_nested() {
-        let data = Eu4Table::parse("foo={bar=chickens foobar=frogs}\ncheeze=unfrogged");
+        let data = CwTable::parse("foo={bar=chickens foobar=frogs}\ncheeze=unfrogged");
         assert_eq!(data.values.len(), 2);
         assert_eq!(data.values[1].key, "cheeze");
-        assert_eq!(data.values[1].value.as_str(), "unfrogged");
+        assert_eq!(data.values[1].value.as_string(), Some("unfrogged"));
 
-        if let &Eu4Value::Table(ref table) = &data.values[0].value {
+        if let &CwValue::Table(ref table) = &data.values[0].value {
             assert_eq!(table.values.len(), 2);
             assert_eq!(table.values[0].key, "bar");
-            assert_eq!(table.values[0].value.as_str(), "chickens");
+            assert_eq!(table.values[0].value.as_string(), Some("chickens"));
             assert_eq!(table.values[1].key, "foobar");
-            assert_eq!(table.values[1].value.as_str(), "frogs");
+            assert_eq!(table.values[1].value.as_string(), Some("frogs"));
         } else {
             assert!(false, "Wrong value type!");
         }
@@ -253,17 +253,14 @@ mod tests {
 
     #[test]
     fn parse_annoying_nested() {
-        let data = Eu4Table::parse("foo={bar=chickens foobar=frogs}cheeze=unfrogged");
+        let data = CwTable::parse("foo={bar=chickens foobar=frogs}cheeze=unfrogged");
         assert_eq!(data.values.len(), 2);
-        assert_eq!(data.values[1].key, "cheeze");
-        assert_eq!(data.values[1].value.as_str(), "unfrogged");
+        assert_keystr(data.values[1], "cheeze", "unfrogged");
 
-        if let &Eu4Value::Table(ref table) = &data.values[0].value {
+        if let &CwValue::Table(ref table) = &data.values[0].value {
             assert_eq!(table.values.len(), 2);
-            assert_eq!(table.values[0].key, "bar");
-            assert_eq!(table.values[0].value.as_str(), "chickens");
-            assert_eq!(table.values[1].key, "foobar");
-            assert_eq!(table.values[1].value.as_str(), "frogs");
+            assert_keystr(table.values[0], "bar", "chickens");
+            assert_keystr(table.values[1], "foobar", "frogs");
         } else {
             assert!(false, "Wrong value type!");
         }
@@ -271,15 +268,24 @@ mod tests {
 
     #[test]
     fn parse_array() {
-        let data = Eu4Table::parse("foo={why \"does this\" exist}");
+        let data = CwTable::parse("foo={why \"does this\" exist}");
         assert_eq!(data.values.len(), 1);
         assert_eq!(data.values[0].key, "foo");
 
-        if let &Eu4Value::Array(ref array) = &data.values[0].value {
+        if let &CwValue::Array(ref array) = &data.values[0].value {
             assert_eq!(array.len(), 3);
-            assert_eq!(array[0].as_str(), "why");
-            assert_eq!(array[1].as_str(), "does this");
-            assert_eq!(array[2].as_str(), "exist");
+            assert_valuestr(array[0], "why");
+            assert_valuestr(array[1], "does this");
+            assert_valuestr(array[2], "exist");
         }
+    }
+
+    fn assert_keystr(cw_value: &CwKeyValue, key: &str, value: &str) {
+        assert_eq!(cw_value.key, key);
+        assert_valuestr(cw_value.value, value);
+    }
+
+    fn assert_valuestr(cw_value: &CwValue, value: &str) {
+        assert_eq!(cw_value.value.as_string(), Some(&String::from(value)));
     }
 }

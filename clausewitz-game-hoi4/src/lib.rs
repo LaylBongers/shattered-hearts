@@ -6,7 +6,7 @@ mod modif;
 pub use modif::Hoi4Mod;
 
 use std::path::PathBuf;
-use clausewitz_data::{file, CwTable};
+use clausewitz_data::{file, CwTable, CwValue};
 
 #[derive(Clone)]
 pub struct Hoi4Country {
@@ -48,6 +48,10 @@ impl Hoi4Country {
 
     pub fn history_table(&self) -> &CwTable {
         &self.history
+    }
+
+    pub fn set_color(&mut self, r: u8, g: u8, b: u8) {
+        self.common.set("color", CwValue::from_color(r, g, b));
     }
 }
 
