@@ -46,6 +46,14 @@ impl CwValue {
             None
         }
     }
+
+    pub fn as_array_mut(&mut self) -> Option<&mut Vec<CwValue>> {
+        if let &mut CwValue::Array(ref mut val) = self {
+            Some(val)
+        } else {
+            None
+        }
+    }
 }
 
 impl From<String> for CwValue {
@@ -60,9 +68,21 @@ impl<'a> From<&'a String> for CwValue {
     }
 }
 
+impl<'a> From<&'a str> for CwValue {
+    fn from(value: &'a str) -> Self {
+        CwValue::from_str(value)
+    }
+}
+
 impl From<i32> for CwValue {
     fn from(value: i32) -> Self {
         CwValue::from_str(value.to_string())
+    }
+}
+
+impl From<CwTable> for CwValue {
+    fn from(value: CwTable) -> Self {
+        CwValue::Table(value)
     }
 }
 
@@ -127,6 +147,10 @@ impl CwTable {
 
     pub fn add(&mut self, key: &str, value: CwValue) {
         self.values.push(CwKeyValue { key: key.into(), value: value });
+    }
+
+    pub fn has_key(&self, key: &str) -> bool {
+        self.values.iter().any(|v| v.key.to_lowercase() == key.to_lowercase())
     }
 }
 

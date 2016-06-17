@@ -84,6 +84,9 @@ fn main() {
         // Replace IDs in the country so they don't conflict
         country.replace_ids(|| {next_id+=1; next_id-1});
 
+        // Give the country -25% time needed to justify war goals, prevents years of waiting
+        country.add_idea("shattered_hearts_fractured_state".into());
+
         // Copy the state so we can assign ownership
         let mut modif_state = state.clone();
         modif_state.set_owner(country.tag().clone());
@@ -94,6 +97,9 @@ fn main() {
         let mut units = game.units_for_id(country.units()).unwrap().clone();
         units.set_id(format!("{}_1936", country.tag()));
         country.set_units(units.id().clone());
+
+        // Elimiate all starting units
+        units.clear();
 
         // Add the data we need in the mod
         modif.add_country(country);

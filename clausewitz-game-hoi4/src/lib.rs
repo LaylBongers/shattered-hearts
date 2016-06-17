@@ -76,6 +76,24 @@ impl Hoi4Country {
     pub fn set_units(&mut self, value: String) {
         self.history.set("oob", value.into());
     }
+
+    pub fn add_idea(&mut self, value: String) {
+        // Make sure the ideas key actually exists
+        if !self.history.has_key("add_ideas") {
+            self.history.set("add_ideas", CwValue::Array(Vec::new()));
+        }
+
+        let ideas_v = self.history.get_mut("add_ideas").unwrap();
+
+        // Make sure it's not a single string value only
+        if let &mut CwValue::String(_) = ideas_v {
+            *ideas_v = CwValue::Array(Vec::new());
+        }
+
+        // Finally, get the table and add the idea
+        let ideas = ideas_v.as_array_mut().unwrap();
+        ideas.push(value.into());
+    }
 }
 
 #[derive(Clone)]
@@ -166,6 +184,12 @@ impl Hoi4Units {
 
     pub fn set_id(&mut self, id: String) {
         self.id = id;
+    }
+
+    pub fn clear(&mut self) {
+        self.data.set("units", CwTable::new().into());
+        self.data.set("air_wings", CwTable::new().into());
+        self.data.set("instant_effect", CwTable::new().into());
     }
 }
 
