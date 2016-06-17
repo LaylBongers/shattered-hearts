@@ -60,6 +60,7 @@ fn main() {
     let config = Config::load();
 
     // Load in the game data
+    info!("Loading Hearts of Iron 4 data...");
     let game = CwGameHoi4::at(&config.game_path);
 
     // Set up the mod file
@@ -89,9 +90,15 @@ fn main() {
         modif_state.set_controller(country.tag().clone());
         modif_state.add_core(country.tag().clone());
 
-        // Add the country and modified state to the mod
+        // Copy the units layout so we can make customize it for this country
+        let mut units = game.units_for_id(country.units()).unwrap().clone();
+        units.set_id(format!("{}_1936", country.tag()));
+        country.set_units(units.id().clone());
+
+        // Add the data we need in the mod
         modif.add_country(country);
         modif.add_state(modif_state);
+        modif.add_units(units);
     }
 
     // Export the mod

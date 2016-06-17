@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 use std::fs;
 use clausewitz_data::{file, CwTable, CwValue};
-use ::{Hoi4Country, Hoi4State};
+use ::{Hoi4Country, Hoi4State, Hoi4Units};
 
 pub struct Hoi4Mod {
     name: String,
@@ -11,6 +11,7 @@ pub struct Hoi4Mod {
 
     countries: Vec<Hoi4Country>,
     states: Vec<Hoi4State>,
+    units: Vec<Hoi4Units>,
 }
 
 impl Hoi4Mod {
@@ -23,6 +24,7 @@ impl Hoi4Mod {
 
             countries: Vec::new(),
             states: Vec::new(),
+            units: Vec::new(),
         }
     }
 
@@ -36,6 +38,10 @@ impl Hoi4Mod {
 
     pub fn add_state(&mut self, state: Hoi4State) {
         self.states.push(state);
+    }
+
+    pub fn add_units(&mut self, units: Hoi4Units) {
+        self.units.push(units);
     }
 
     pub fn export(&self, path: &PathBuf) {
@@ -63,6 +69,7 @@ impl Hoi4Mod {
         // Export the data
         self.export_countries(&dir);
         self.export_states(&dir);
+        self.export_units(&dir);
     }
 
     fn export_modfile(&self, path: &PathBuf) {
@@ -134,6 +141,20 @@ impl Hoi4Mod {
             let mut state_file = state_file_root.clone();
             state_file.push(state.file_name());
             file::write_all_text(state_file, &state.data().serialize(), false).unwrap();
+        }
+    }
+
+    fn export_units(&self, path: &PathBuf) {
+        info!("Exporting units...");
+
+        let mut units_file_root = path.clone();
+        units_file_root.push("history/units");
+        fs::create_dir_all(&units_file_root).unwrap();
+
+        for units in &self.units {
+            let mut units_file = units_file_root.clone();
+            units_file.push(format!("{}.txt", units.id()));
+            file::write_all_text(units_file, &units.data().serialize(), false).unwrap();
         }
     }
 }

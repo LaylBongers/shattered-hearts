@@ -68,6 +68,14 @@ impl Hoi4Country {
     pub fn set_capital(&mut self, state: String) {
         self.history.set("capital", state.into());
     }
+
+    pub fn units(&self) -> &String {
+        self.history.get("oob").unwrap().as_string().unwrap()
+    }
+
+    pub fn set_units(&mut self, value: String) {
+        self.history.set("oob", value.into());
+    }
 }
 
 #[derive(Clone)]
@@ -134,9 +142,37 @@ impl Hoi4State {
     }
 }
 
+#[derive(Clone)]
+pub struct Hoi4Units {
+    id: String,
+    data: CwTable,
+}
+
+impl Hoi4Units {
+    pub fn load(file_name: String, data: CwTable) -> Self {
+        Hoi4Units {
+            id: file_name[..file_name.len()-4].into(),
+            data: data,
+        }
+    }
+
+    pub fn data(&self) -> &CwTable {
+        &self.data
+    }
+
+    pub fn id(&self) -> &String {
+        &self.id
+    }
+
+    pub fn set_id(&mut self, id: String) {
+        self.id = id;
+    }
+}
+
 pub struct CwGameHoi4 {
     countries: Vec<Hoi4Country>,
     states: Vec<Hoi4State>,
+    units: Vec<Hoi4Units>,
 }
 
 impl CwGameHoi4 {
@@ -193,10 +229,15 @@ impl CwGameHoi4 {
         let states = Self::load_directory(path, "history", "states").into_iter()
             .map(|t| Hoi4State::load(t.0, t.1)).collect();
 
+        // Load in the units files
+        let units = Self::load_directory(path, "history", "units").into_iter()
+            .map(|t| Hoi4Units::load(t.0, t.1)).collect();
+
         // Create the container type holding all the data
         CwGameHoi4 {
             countries: countries,
             states: states,
+            units: units,
         }
     }
 
@@ -233,5 +274,9 @@ impl CwGameHoi4 {
 
     pub fn country_for_tag(&self, tag: &str) -> Option<&Hoi4Country> {
         self.countries.iter().find(|c| c.tag() == tag)
+    }
+
+    pub fn units_for_id(&self, id: &str) -> Option<&Hoi4Units> {
+        self.units.iter().find(|u| u.id() == id)
     }
 }

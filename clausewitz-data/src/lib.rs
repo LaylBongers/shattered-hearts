@@ -106,18 +106,18 @@ impl CwTable {
     }
 
     pub fn get(&self, key: &str) -> Option<&CwValue> {
-        self.values.iter().find(|v| v.key == key).map(|v| &v.value)
+        self.values.iter().find(|v| v.key.to_lowercase() == key.to_lowercase()).map(|v| &v.value)
     }
 
     pub fn get_mut(&mut self, key: &str) -> Option<&mut CwValue> {
-        self.values.iter_mut().find(|v| v.key == key).map(|v| &mut v.value)
+        self.values.iter_mut().find(|v| v.key.to_lowercase() == key.to_lowercase()).map(|v| &mut v.value)
     }
 
     pub fn set(&mut self, key: &str, value: CwValue) {
         // Check if a value already exists with this key
-        if let Some(ref mut entry) = self.values.iter_mut().find(|v| v.key == key) {
+        if let Some(entry) = self.get_mut(key) {
             // It does, overwrite it
-            entry.value = value;
+            *entry = value;
             return; // < Can't use else, borrow checking complains
         }
 
